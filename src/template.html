@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title><%= htmlWebpackPlugin.options.title %></title>
+  </head>
+  <body>
+    <div id="container">
+      <div>
+        <label for="location">Enter a location:</label>
+        <input type="text" name="location" id="location" />
+        <button id="submit">Get Weather</button>
+        <button class="hidden" id="getCurrenLocationButton">
+          Use Current Location
+        </button>
+      </div>
+
+      <p id="weather">...</p>
+    </div>
+  </body>
+</html>
