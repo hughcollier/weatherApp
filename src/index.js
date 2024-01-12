@@ -1,74 +1,45 @@
 'use strict'
 
 import './style.scss'
+import { displayResult } from './modules/renderUI.js'
+import { constructUrl } from './modules/getData.js'
 
 const submitBtn = document.getElementById('submit')
-const getCurrenLocationButton = document.getElementById(
-  'getCurrenLocationButton'
-)
-const weatherEl = document.getElementById('weather')
-const url = new URL('https://api.weatherapi.com/v1')
+
 let searchString, currentWeatherUrl, astronomyUrl, weather, forecastUrl
 
 // I can actually get all the data I need from the /forecast endpoint but since this is a learning project I'm going to fetch the current weather and astronomy data from separate endpoints so I can get get some practice using Promise.all()
 
-const getWeatherData = async function (
-  currentWeatherUrl,
-  astronomyUrl,
-  forecastUrl
-) {
+// This function should just return the weather data object rather than call displayResults. (This can be done inside the event listener on the submit button)
+const getWeatherData = async function (forecastUrl) {
   try {
-    let [weather, moon, forecast] = await Promise.all([
-      fetch(currentWeatherUrl),
-      fetch(astronomyUrl),
-      fetch(forecastUrl),
-    ])
-
-    let weatherDataObject = await weather.json()
-    console.log(weatherDataObject)
-    let moonDataObject = await moon.json()
-    console.log(moonDataObject)
+    let forecast = await fetch(forecastUrl)
     let forecastDataObject = await forecast.json()
+    if (!forecast.ok) throw new Error('Something went wrong.')
+
     console.log(forecastDataObject)
-
-    if (!weather.ok || !moon.ok) throw new Error('Something went wrong.')
-
-    displayResult(weatherDataObject)
+    return forecastDataObject
   } catch (error) {
     console.warn(error.message)
   }
 }
-const displayResult = function (weatherDataObject) {
-  weatherEl.textContent = `The weather in ${
-    weatherDataObject.location.name
-  } is ${weatherDataObject.current.condition.text.toLowerCase()} and the temperature is ${
-    weatherDataObject.current.temp_c
-  }ºC`
-}
-
-const constructUrl = function (endpoint, searchString) {
-  url.search = `?key=${process.env.API_KEY}&q=${searchString}`
-  url.pathname = '/v1'
-  url.pathname += endpoint
-  return url
-}
 
 const getCurrentLocation = function (position) {
   searchString = `${position.coords.latitude},${position.coords.longitude}`
-  currentWeatherUrl = constructUrl('/current.json', searchString)
-  currentWeatherUrl += '&aqi=no'
-
-  astronomyUrl = constructUrl('/astronomy.json', searchString)
-
   forecastUrl = constructUrl('/forecast.json', searchString)
   forecastUrl += '&days=3&aqi=no&alerts=no'
 
-  getWeatherData(currentWeatherUrl, astronomyUrl, forecastUrl)
+  let weatherObject = getWeatherData(forecastUrl)
+  displayResult(weatherObject)
 }
 
 const handleGeolocationError = function (error) {
   console.warn(error.message, error.code)
 }
+
+const getCurrenLocationButton = document.getElementById(
+  'getCurrenLocationButton'
+)
 
 if ('geolocation' in navigator) {
   console.log('geoloaction is available')
@@ -85,13 +56,10 @@ if ('geolocation' in navigator) {
 
 submitBtn.addEventListener('click', () => {
   searchString = document.getElementById('location').value
-  currentWeatherUrl = constructUrl('/current.json', searchString)
-  currentWeatherUrl += '&aqi=no'
-
-  astronomyUrl = constructUrl('/astronomy.json', searchString)
-
   forecastUrl = constructUrl('/forecast.json', searchString)
   forecastUrl += '&days=3&aqi=no&alerts=no'
 
-  getWeatherData(currentWeatherUrl, astronomyUrl, forecastUrl)
+  getWeatherData(forecastUrl).then(data => displayResult(data))
+
+  //
 })
