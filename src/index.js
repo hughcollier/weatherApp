@@ -1,9 +1,13 @@
 'use strict'
 
-import './style.scss'
+import './scss/style.scss'
 import { displayResult } from './modules/renderUI.js'
 import { constructUrl, getWeatherData } from './modules/getData.js'
 import { getUserLocation } from './modules/getUserLocation.js'
+
+import testIcon from './assets/sunCloud.png'
+
+console.log(`Test: ${testIcon}`)
 
 getUserLocation()
 
