@@ -1,6 +1,7 @@
 @use '_reset.scss';
 @use '_test.scss';
 @use '_weather-table.scss';
+@use '_user-input-form.scss';
 
 #container {
   display: flex;
@@ -8,11 +9,6 @@
   justify-content: center;
   align-items: center;
   flex-direction: column;
-}
-
-button {
-  /* display: block; */
-  /* margin: 0 auto; */
 }
 
 p {
