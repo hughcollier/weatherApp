@@ -24,6 +24,8 @@ module.exports = {
       title: 'Get the latest weather in your location',
       template: './src/template.html',
     }),
-    new Dotenv(),
+    new Dotenv({
+      systemvars: true,
+    }),
   ],
 }
